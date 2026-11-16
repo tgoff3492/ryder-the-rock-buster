@@ -1,69 +1,39 @@
-# Ryder the Rock Buster 🪨💥
+# Goff Kid's Arcade 🕹️
 
-A top-down shooter game. **Game idea by RJ.**
-
-> "You're a guy and there's rock monsters that you have to destroy, and you have to destroy the rock monsters with a gun, and there's different levels that are harder. And you can pick up upgrades to your guns that make your guns more powerful and do more damage. And they add special abilities to the guns that make them look cooler when they fire." — RJ
+Games made for the Goff kids. Pick a game from the menu with the **arrow keys** and press **SPACE** to play.
 
 ## ▶ Play it now
 
 **https://tgoff3492.github.io/ryder-the-rock-buster/**
 
-Works in Chrome or Safari on a computer (it needs a keyboard). You can also open `index.html` directly.
+Works in Chrome or Safari on a computer (the games need a keyboard). You can also open `index.html` straight from the folder.
 
-## How to play
+## The games
 
-| Key | What it does |
-|---|---|
-| ⬅ ⬆ ➡ ⬇ Arrow keys | Move Ryder |
-| **SPACE** (hold) | Shoot. The game aims at the closest rock monster for you. |
-| P | Pause |
-| M | Sound on/off |
-| ← → on the title screen | Switch between Kid Mode and Hard Mode |
+| | Game | For | What it is |
+|---|---|---|---|
+| 🪨💥 | [**Ryder the Rock Buster**](rock-buster/README.md) | Ryder (game idea by RJ) | Blast rock monsters, grab gun upgrades, beat the Rock King |
+| 🏎️💨 | [**Weston Super Speeder**](super-speeder/README.md) | Weston | Race cars, monster trucks, fire trucks and more around 5 tracks |
 
-You can also aim with the mouse or trackpad by clicking and holding, but you don't need to.
+In either game, press **Esc** on the title screen (or click **🏠 Arcade**) to come back to this menu.
 
-## Power-ups
+## How it's set up
 
-Smashed rocks sometimes drop glowing prizes. Walk near one and it flies to you.
-Every power-up changes how the gun **looks** and how it **shoots**:
+```
+index.html             ← the arcade menu (the play link opens this)
+images/                ← the pictures on the menu
+rock-buster/           ← Ryder the Rock Buster (index.html is the whole game)
+super-speeder/         ← Weston Super Speeder (index.html is the whole game)
+```
 
-| Prize | Name | What it does |
-|---|---|---|
-| 💪 | Mega Power | Bigger gun, bigger bullets, more damage (5 levels) |
-| ⏩ | Rapid Fire | Shoot faster (5 levels) |
-| 🔱 | Triple Shot | Three bullets at once |
-| 🔥 | Fire Blast | Flaming bullets set rocks on fire |
-| ❄️ | Ice Beam | Frozen rocks turn blue and move slow |
-| ⚡ | Lightning | Zaps jump to nearby rocks |
-| 🚀 | Rockets | Every shot is a rocket that explodes |
-| 🌈 | Rainbow Laser | Rainbow shots go right through rocks |
-| ❤️ | Heart | Get health back |
+Each game is a single HTML file with plain JavaScript and no libraries.
 
-Power-ups **stack**: collect them all and every shot is a flaming, freezing, zapping, exploding rainbow rocket.
+**To add a new game:** make a new folder with its own `index.html`, add a card for it in the arcade's `index.html`, and put a 480×320 picture in `images/`.
 
-## Levels
+## Rules every game follows
 
-1. Pebble Park
-2. Rocky Road
-3. Boulder Hills (big boulders split into pebbles!)
-4. Lava Land (lava rocks throw rocks at you)
-5. **Rock King's Castle** (boss!)
-6. Crystal Caves (crystal rocks are fast)
-7. Giant's Canyon
-8. Volcano
-9. Stone Storm
-10. **The Rock King Returns** (final boss!)
-
-## Made easy for little kids
-
-- **Kid Mode** (on by default): 6 hearts, slower monsters
-- The game aims for you when you hold SPACE
-- You blink and can't get hurt for a moment after getting hit
-- Prizes fly toward you when you get close
-- You can shoot the rocks that monsters throw at you
-- No game over: if the rocks get you, you try the level again **and keep all your power-ups**
-
-## Making changes
-
-The whole game is one file: `index.html` (plain JavaScript and HTML canvas, no libraries).
-See [`DESIGN.md`](DESIGN.md) for how it works and a list of ideas to add next.
+1. **Arrow keys + SPACE.** Made for a Mac laptop with a trackpad.
+2. **A little kid should never get stuck.** There's always an easy mode, and no "game over" that throws away progress.
+3. **Everything you collect shows up on screen.** Upgrades change how things look.
+4. **Stuff should feel crunchy.** Sounds, shakes, and comic words on everything.
+5. **Sounds are made with code**, so there are no sound files to load.
