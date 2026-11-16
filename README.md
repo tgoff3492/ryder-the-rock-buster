@@ -4,9 +4,13 @@ A top-down shooter game. **Game idea by RJ.**
 
 > "You're a guy and there's rock monsters that you have to destroy, and you have to destroy the rock monsters with a gun, and there's different levels that are harder. And you can pick up upgrades to your guns that make your guns more powerful and do more damage. And they add special abilities to the guns that make them look cooler when they fire." — RJ
 
-## How to play
+## ▶ Play it now
 
-Open `index.html` in Chrome or Safari on a computer. You don't need to install anything.
+**https://tgoff3492.github.io/ryder-the-rock-buster/**
+
+Works in Chrome or Safari on a computer (it needs a keyboard). You can also open `index.html` directly.
+
+## How to play
 
 | Key | What it does |
 |---|---|
