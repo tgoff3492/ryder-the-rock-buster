@@ -12,6 +12,11 @@
 3. **Stuff should feel crunchy.** Screen shake, rock chunks, comic words ("CRUNCH!", "KABOOM!"), and sounds on every hit.
 4. **Controls are arrow keys + SPACE** (made for a Mac laptop with a trackpad).
 
+## The hero: Ryder himself
+Drawn to look like RJ: short spiky blond hair, blue eyes, big toothy grin, red T-shirt with a blue patch, and blue shorts with little yellow ducks.
+He stands up and turns to face the way he's shooting. His legs move when he runs, he blinks, and he makes an "ouch" face when a rock hits him.
+All his colors are in `RYDER` at the top of `drawPlayer()`, so it's easy to give him a new shirt.
+
 ## How the code is organized (`index.html`)
 | Section | What's in it |
 |---|---|
@@ -20,6 +25,7 @@
 | `LEVELS` | The 10 levels: name, background theme, how many rocks, which kinds, boss settings |
 | `fire()` / `hitMonster()` | What the gun does and what each special power does when it hits |
 | `chooseUpgrade()` | Picks which prize drops (cool specials first, then power/speed) |
+| `RYDER` / `drawPlayer()` | Ryder's colors and how he's drawn |
 | `drawGun()` / `drawBullet()` | How the gun and bullets look for each upgrade |
 | `bossAI()` | The Rock King's attacks: a ring of thrown rocks and summoning pebbles |
 
@@ -30,7 +36,8 @@
 - **New monster:** add it to `MT`, then use its name in a level's `mix`
 
 ## Ideas for next time (ask RJ!)
-- [ ] Pick a different hero (colors, hats)
+- [x] Make the hero look like Ryder
+- [ ] Different shirts or hats for Ryder (change the colors in `RYDER`)
 - [ ] New rock monsters: a sneaky invisible rock, a giant rock snake, a flying rock bat
 - [ ] More guns: freeze ray, bubble gun, laser sword
 - [ ] A shop between levels to spend score on upgrades

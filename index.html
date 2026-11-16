@@ -878,34 +878,147 @@ function lighten(hex) {
   return `rgb(${r},${g},${b})`;
 }
 
+// ---- RYDER (the hero) ----
+// Drawn standing up, facing the way he shoots. Look: blond spiky hair,
+// blue eyes, big toothy grin, red T-shirt with a blue patch, blue shorts with yellow ducks.
+const RYDER = {
+  skin: '#f7cba6', skinDark: '#e3a47e', line: '#5a3424',
+  hair: '#f2d77a', hairLight: '#fff2b8', hairDark: '#c99d3e',
+  eye: '#3d8fe0', shirt: '#d9252f', shirtDark: '#a3161f', patch: '#2d6cdf',
+  shorts: '#8cc6ef', shortsDark: '#5d9ccc', duck: '#ffd23f', shoe: '#2b2f3a'
+};
 function drawPlayer(p, aimAng) {
+  const C = RYDER, ca = Math.cos(aimAng), sa = Math.sin(aimAng);
+  const face = ca >= 0 ? 1 : -1;
+  const moving = p.walk !== p.lastWalk; p.lastWalk = p.walk;
+  const step = Math.sin(p.walk), bob = moving ? Math.abs(step) * 1.4 : 0;
   ctx.save(); ctx.translate(p.x, p.y);
+  // shadow under his feet
   ctx.fillStyle = 'rgba(0,0,0,0.3)';
-  ctx.beginPath(); ctx.ellipse(0, p.r * 0.8, p.r * 1.1, p.r * 0.45, 0, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(0, 21, 13, 4.5, 0, 0, 7); ctx.fill();
   if (p.inv > 0 && Math.floor(p.inv * 14) % 2 === 0) ctx.globalAlpha = 0.4;
   const nsp = specialCount();
   if (nsp > 0) {
     ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha *= 0.12 + nsp * 0.03;
-    ctx.fillStyle = gunColor(); ctx.beginPath(); ctx.arc(0, 0, p.r + 8 + Math.sin(T * 6) * 3, 0, 7); ctx.fill(); ctx.restore();
+    ctx.fillStyle = gunColor(); ctx.beginPath(); ctx.arc(0, -2, p.r + 12 + Math.sin(T * 6) * 3, 0, 7); ctx.fill(); ctx.restore();
   }
-  ctx.rotate(aimAng);
-  const step = Math.sin(p.walk) * 5;
-  ctx.fillStyle = '#3b2a1e';
-  ctx.beginPath(); ctx.ellipse(step, -7, 6, 4, 0, 0, 7); ctx.fill();
-  ctx.beginPath(); ctx.ellipse(-step, 7, 6, 4, 0, 0, 7); ctx.fill();
-  drawGun(p);
-  // body
-  ctx.fillStyle = '#2d6cdf'; ctx.strokeStyle = '#173a7a'; ctx.lineWidth = 2.5;
-  ctx.beginPath(); ctx.ellipse(-1, 0, 12, 16, 0, 0, 7); ctx.fill(); ctx.stroke();
-  // arms holding the gun
-  ctx.fillStyle = '#f2c294';
-  ctx.beginPath(); ctx.arc(11, 5, 4.5, 0, 7); ctx.fill();
-  ctx.beginPath(); ctx.arc(9, -6, 4.5, 0, 7); ctx.fill();
-  // helmet
-  ctx.fillStyle = '#3f8f4a'; ctx.strokeStyle = '#1f4d26';
-  ctx.beginPath(); ctx.arc(0, 0, 10, 0, 7); ctx.fill(); ctx.stroke();
-  ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.beginPath(); ctx.arc(-3, -3, 4, 0, 7); ctx.fill();
-  ctx.fillStyle = '#ffd23f'; ctx.beginPath(); ctx.arc(0, 0, 10, -0.7, 0.7); ctx.lineTo(0, 0); ctx.closePath(); ctx.fill();
+  // where his hands go (on the gun)
+  const rot = (x, y) => [x * ca - y * sa, x * sa + y * ca];
+  const h1 = rot(7, 5), h2 = rot(17, 5);
+  const gunBehind = sa < -0.35; // aiming up: gun goes behind him
+  const gunLayer = () => {
+    ctx.save(); ctx.rotate(aimAng); drawGun(p); ctx.restore();
+    ctx.fillStyle = C.skin; ctx.strokeStyle = C.line; ctx.lineWidth = 1;
+    for (const h of [h1, h2]) { ctx.beginPath(); ctx.arc(h[0], h[1], 2.8, 0, 7); ctx.fill(); ctx.stroke(); }
+  };
+  const arms = () => {
+    ctx.strokeStyle = C.skin; ctx.lineWidth = 4.2; ctx.lineCap = 'round';
+    const sh = [[-5.5, -1 - bob], [5.5, -1 - bob]];
+    // each arm goes to the closer hand
+    const pairs = face > 0 ? [[sh[0], h1], [sh[1], h2]] : [[sh[1], h1], [sh[0], h2]];
+    for (const [s, h] of pairs) { ctx.beginPath(); ctx.moveTo(s[0], s[1]); ctx.lineTo(h[0], h[1]); ctx.stroke(); }
+    ctx.fillStyle = C.shirt;
+    for (const s of sh) { ctx.beginPath(); ctx.arc(s[0], s[1] + 0.5, 3.6, 0, 7); ctx.fill(); }
+  };
+  if (gunBehind) { gunLayer(); arms(); }
+
+  ctx.save(); ctx.scale(face, 1);
+  ctx.lineJoin = 'round';
+  // legs + shoes
+  const lift = [Math.max(0, step) * 3.5, Math.max(0, -step) * 3.5];
+  [-3.6, 3.6].forEach((lx, i) => {
+    const fy = 19 - (moving ? lift[i] : 0);
+    ctx.strokeStyle = C.skin; ctx.lineWidth = 3.8; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(lx, 12); ctx.lineTo(lx, fy - 1); ctx.stroke();
+    ctx.fillStyle = C.shoe; ctx.beginPath(); ctx.ellipse(lx + 1.2, fy, 3.6, 2.2, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.fillRect(lx - 1.8, fy + 0.6, 6, 1);
+  });
+  ctx.translate(0, -bob);
+  // duck shorts
+  ctx.fillStyle = C.shorts; ctx.strokeStyle = C.shortsDark; ctx.lineWidth = 1.2;
+  rr(-7.5, 7, 15, 7, 2.5); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0, 9.5); ctx.lineTo(0, 14); ctx.stroke();
+  ctx.fillStyle = C.duck;
+  for (const [dx, dy] of [[-4.5, 10.5], [3.5, 9.5], [-1.5, 12.6], [5.2, 12.4]]) {
+    ctx.beginPath(); ctx.arc(dx, dy, 1.05, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.arc(dx + 0.9, dy - 0.9, 0.7, 0, 7); ctx.fill();
+  }
+  // red T-shirt
+  ctx.fillStyle = C.shirt; ctx.strokeStyle = C.shirtDark; ctx.lineWidth = 1.4;
+  rr(-8, -4, 16, 13, 4.5); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = C.shirtDark; ctx.globalAlpha *= 0.5; rr(-8, 5, 16, 4, 2); ctx.fill(); ctx.globalAlpha /= 0.5;
+  ctx.fillStyle = C.patch; ctx.beginPath(); ctx.arc(3.4, 0.5, 1.8, 0, 7); ctx.fill();
+  ctx.fillStyle = C.skinDark; ctx.beginPath(); ctx.ellipse(0.8, -3.6, 3.4, 1.4, 0, 0, Math.PI); ctx.fill();
+
+  // ---- head ----
+  const hx = 0.5, hy = -14.5;
+  // ear (on the back side of his head)
+  ctx.fillStyle = C.skin; ctx.strokeStyle = C.line; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.ellipse(hx - 9.6, hy + 1, 2.6, 3.2, 0, 0, 7); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.arc(hx, hy, 11, 0, 7); ctx.fill(); ctx.stroke();
+  // short blond hair with spikes up front
+  ctx.fillStyle = C.hair; ctx.strokeStyle = C.hairDark; ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  ctx.moveTo(hx - 11.2, hy + 1.5);
+  ctx.quadraticCurveTo(hx - 11.5, hy - 6, hx - 7, hy - 9.5);
+  const spikes = [[-6, -12], [-3.5, -10.6], [-1.5, -13.4], [1, -11], [3.5, -13.8], [6, -10.8], [8.8, -12.4], [10.6, -7.5]];
+  for (let i = 0; i < spikes.length; i++) {
+    const [sx, sy] = spikes[i];
+    ctx.lineTo(hx + sx, hy + sy + Math.sin(T * 4 + i) * (moving ? 0.6 : 0.2));
+  }
+  ctx.quadraticCurveTo(hx + 8.5, hy - 5, hx + 5, hy - 5.8);  // front fringe
+  ctx.quadraticCurveTo(hx + 1, hy - 7.8, hx - 3, hy - 6.2);
+  ctx.quadraticCurveTo(hx - 7.5, hy - 5, hx - 8.2, hy + 1.5); // sideburn
+  ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.strokeStyle = C.hairLight; ctx.lineWidth = 1.3; ctx.lineCap = 'round';
+  for (const [a, b, c, d] of [[-5, -8, -3, -12], [0, -8.5, 2, -12.5], [5, -8, 7, -11]]) {
+    ctx.beginPath(); ctx.moveTo(hx + a, hy + b); ctx.lineTo(hx + c, hy + d); ctx.stroke();
+  }
+  // face (shifted toward the way he's looking)
+  const fx = hx + 2.2, lookX = Math.abs(ca) * 0.9, lookY = sa * 0.8;
+  const hurt = p.inv > 0.35, blink = !hurt && (T % 3.7) < 0.12;
+  ctx.strokeStyle = C.line; ctx.lineWidth = 1.2; ctx.lineCap = 'round';
+  for (const ex of [fx - 3.8, fx + 3.6]) {
+    if (hurt) {          // squeezed "> <" eyes
+      const d = ex < fx ? 1 : -1;
+      ctx.beginPath(); ctx.moveTo(ex - 1.8 * d, hy - 2.6); ctx.lineTo(ex + 1.6 * d, hy - 1.2); ctx.lineTo(ex - 1.8 * d, hy + 0.2); ctx.stroke();
+    } else if (blink) {
+      ctx.beginPath(); ctx.moveTo(ex - 2, hy - 1); ctx.lineTo(ex + 2, hy - 1); ctx.stroke();
+    } else {
+      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.ellipse(ex, hy - 1.2, 2.5, 2.9, 0, 0, 7); ctx.fill();
+      ctx.fillStyle = C.eye; ctx.beginPath(); ctx.arc(ex + lookX, hy - 1 + lookY, 1.75, 0, 7); ctx.fill();
+      ctx.fillStyle = '#10243d'; ctx.beginPath(); ctx.arc(ex + lookX, hy - 1 + lookY, 0.85, 0, 7); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(ex + lookX + 0.6, hy - 1.7 + lookY, 0.55, 0, 7); ctx.fill();
+    }
+    ctx.strokeStyle = C.hairDark; ctx.lineWidth = 1; // eyebrows
+    ctx.beginPath(); ctx.moveTo(ex - 1.8, hy - 4.6); ctx.quadraticCurveTo(ex, hy - 5.6, ex + 1.8, hy - 4.8); ctx.stroke();
+    ctx.strokeStyle = C.line; ctx.lineWidth = 1.2;
+  }
+  // rosy cheeks
+  ctx.fillStyle = 'rgba(255,120,120,0.35)';
+  ctx.beginPath(); ctx.arc(fx - 6, hy + 2.6, 1.8, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.arc(fx + 6.2, hy + 2.6, 1.8, 0, 7); ctx.fill();
+  // nose
+  ctx.strokeStyle = C.skinDark; ctx.beginPath(); ctx.arc(fx + 0.3, hy + 1.2, 1.1, -0.3, Math.PI * 0.7); ctx.stroke();
+  // mouth: big toothy grin (or "oof!" when hurt)
+  if (hurt) {
+    ctx.fillStyle = '#7a1f22'; ctx.beginPath(); ctx.ellipse(fx, hy + 5.3, 1.6, 2, 0, 0, 7); ctx.fill();
+  } else {
+    ctx.fillStyle = '#7a1f22'; ctx.strokeStyle = C.line; ctx.lineWidth = 1;
+    const mouth = () => {
+      ctx.beginPath(); ctx.moveTo(fx - 4.4, hy + 3.4); ctx.quadraticCurveTo(fx, hy + 4.1, fx + 4.4, hy + 3.4);
+      ctx.quadraticCurveTo(fx + 3.4, hy + 8.4, fx, hy + 8.2); ctx.quadraticCurveTo(fx - 3.4, hy + 8.4, fx - 4.4, hy + 3.4);
+      ctx.closePath();
+    };
+    mouth(); ctx.fill();
+    ctx.save(); ctx.clip();
+    ctx.fillStyle = '#fff'; ctx.fillRect(fx - 5, hy + 3, 10, 2.1);
+    ctx.fillStyle = '#f07a86'; ctx.beginPath(); ctx.ellipse(fx + 0.5, hy + 8.3, 2.4, 1.5, 0, 0, 7); ctx.fill();
+    ctx.restore(); mouth(); ctx.stroke();
+  }
+  ctx.restore(); // end facing flip
+
+  if (!gunBehind) { arms(); gunLayer(); }
   ctx.restore();
 }
 function drawGun(p) {
@@ -1109,9 +1222,8 @@ function drawTitle() {
   text('RYDER THE', W / 2, 104 + wob, 64, '#ff9a3c');
   text('ROCK BUSTER!', W / 2, 180 - wob, 92, '#ffd23f');
   text('A game by RJ', W / 2, 250, 26, '#fff');
-  const hero = { x: W / 2, y: 320, r: 16, inv: 0, walk: T * 6, flash: (T % 0.4) < 0.06 ? 1 : 0 };
-  const aim = Math.atan2(mouse.y - hero.y, mouse.x - hero.x);
-  ctx.save(); ctx.translate(hero.x, hero.y); ctx.scale(2, 2); ctx.translate(-hero.x, -hero.y);
+  const hero = { x: W / 2, y: 330, r: 16, inv: 0, walk: T * 6, flash: (T % 0.4) < 0.06 ? 1 : 0 };
+  ctx.save(); ctx.translate(hero.x, hero.y); ctx.scale(1.8, 1.8); ctx.translate(-hero.x, -hero.y);
   drawPlayer(hero, Math.sin(T * 1.5) * 1.2 - Math.PI / 2);
   ctx.restore();
 
